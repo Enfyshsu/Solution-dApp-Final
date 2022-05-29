@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="static/img/logo.ico" type="image/x-icon" />
+  <title>Solution</title>
+  <link rel="stylesheet" href="static/css/style.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <script src="/static/js/wallet.js"></script>
+  <script>
+    $(function () {
+      $("#header").load("/header");
+      $("#footer").load("/footer");
+    }); 
+  </script>
+</head>
+
+<body>
+
+  <div class="area noselect">
+    <div class="row chatpage-header">
+      <div class="col-9">
+        <div class="chatting-name"><span><img src="/static/img/unicorn3.png"
+              width="50px"></span>&nbsp&nbsp<span>Solution</span></div>
+      </div>
+      <div class="col-3">
+        <div class="row">
+          <div class="col-9"></div>
+          <div class="col-3">
+            <div id="header"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section id="home-title" class="home-section">
+      <img src="/static/img/unicorn2.png" width="250px" class="unicorn" style="transform:scaleX(-1)">
+      <img src="/static/img/unicorn4.png" class="unicorn" width="250px">
+      <h1>Solution</h1>
+      <h2>Solution is the <span class="highlight">second</span> ever Dating app<br>being built on Blockchain 😎😎</h2>
+    </section>
+    <section class="home-section">
+      <a href="#action">
+        <svg class="arrows">
+          <path class="a1" d="M0 0 L30 32 L60 0"></path>
+          <path class="a2" d="M0 20 L30 52 L60 20"></path>
+          <path class="a3" d="M0 40 L30 72 L60 40"></path>
+        </svg>
+      </a>
+    </section>
+    <section id="action" class="home-section">
+      <h1>Getting Start</h1>
+      <div>
+        <div class="justify-content-center">
+          <a id="wallet-not-installed" href="https://solflare.com/download" target="_blank" class="btn download"
+            style="display: none">Download Solflare</a>
+          <h3 id="wallet-installed" style="display: none">You have installed <a href="https://solflare.com/download"
+              target="_blank">Solflare</a> wallet</h3>
+        </div>
+      </div>
+      <div class="row homepage-content">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-4 my-container home-padding">
+          <h2><img id="step1" src="/static/img/checked.png" width="60px" style="display: none">STEP 1</h2>
+          <div id="action-connect-wallet" class="action action-size my-box">
+            <div id="connect-wallet-text" class="action-text" style="display: none;">Connect Solflare Wallet</div>
+            <div><img id="connect-wallet" src="/static/img/wallet.png" width="100%"></div>
+          </div>
+        </div>
+        <div class="col-lg-4 my-container home-padding">
+          <h2><img id="step2" src="/static/img/checked.png" width="60px" style="display: none">STEP 2</h2>
+          <div id="action-authentication" class="action action-size my-box">
+            <div id="authentication-text" class="action-text" style="display: none;">Sign Authentication Message</div>
+            <div><img id="authentication" src="/static/img/insurance.png" width="100%"></div>
+          </div>
+        </div>
+        <div class="col-lg-2"></div>
+      </div>
+    </section>
+    <section class="home-section">
+      <a href="#home-team">
+        <svg class="arrows">
+          <path class="a1" d="M0 0 L30 32 L60 0"></path>
+          <path class="a2" d="M0 20 L30 52 L60 20"></path>
+          <path class="a3" d="M0 40 L30 72 L60 40"></path>
+        </svg>
+      </a>
+    </section>
+    <!--  -->
+    <section id="home-team" class="home-section">
+      <div class="row justify-content-center mb-4">
+        <div class="col-md-7 text-center">
+          <h1>Team</h1>
+          <h2>@ National Taiwan University</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-1"></div>
+        <!-- column  -->
+        <div class="col-lg-2 mb-4">
+          <!-- Row -->
+          <div class="row">
+            <div class="col-md-12 team">
+              <div class="team-stdId">
+                <h4>網媒所</h4>R10944010
+              </div>
+              <img id="team-yee" src="/static/img/team_yee.jpg" class="img-fluid rounded-circle photo" />
+            </div>
+            <div class="col-md-12">
+              <div class="pt-2">
+                <h4 class="mt-4 font-weight-medium mb-0">何宜融</h4>
+                <h4 class="mb-3 work">網頁後端</h4>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row -->
+        </div>
+        <!-- column  -->
+        <!-- column  -->
+        <div class="col-lg-2 mb-4">
+          <!-- Row -->
+          <div class="row">
+            <div class="col-md-12 team">
+              <div class="team-stdId">
+                <h4>網媒所</h4>R09944074
+              </div>
+              <img src="/static/img/team_chu.jpg" class="img-fluid rounded-circle photo" />
+            </div>
+            <div class="col-md-12">
+              <div class="pt-2">
+                <h4 class="mt-4 font-weight-medium mb-0">許宛筑</h4>
+                <h4 class="mb-3 work">網頁前端</h4>
+              </div>
+            </div>
+          </div>
+          <!-- Row -->
+        </div>
+        <!-- column  -->
+        <!-- column  -->
+        <div class="col-lg-2 mb-4">
+          <!-- Row -->
+          <div class="row">
+            <div class="col-md-12 team">
+              <div class="team-stdId">
+                <h4>資工所</h4>R10922186
+              </div>
+              <img src="/static/img/team_yang.jpg" class="img-fluid rounded-circle photo" />
+            </div>
+            <div class="col-md-12">
+              <div class="pt-2">
+                <h4 class="mt-4 font-weight-medium mb-0">陳少洋</h4>
+                <h4 class="mb-3 work">智能合約</h4>
+              </div>
+            </div>
+          </div>
+          <!-- Row -->
+        </div>
+        <!-- column  -->
+        <!-- column  -->
+        <div class="col-lg-2 mb-4">
+          <!-- Row -->
+          <div class="row">
+            <div class="col-md-12 team">
+              <div class="team-stdId">
+                <h4>網媒所</h4>R10944012
+              </div>
+              <img src="/static/img/unicorn1.png" class="img-fluid rounded-circle photo" />
+            </div>
+            <div class="col-md-12">
+              <div class="pt-2">
+                <h4 class="mt-4 font-weight-medium mb-0">陳昱暢</h4>
+                <h4 class="mb-3 work">智能合約</h4>
+              </div>
+            </div>
+          </div>
+          <!-- Row -->
+        </div>
+        <!-- column  -->
+        <!-- column  -->
+        <div class="col-lg-2 mb-4">
+          <!-- Row -->
+          <div class="row">
+            <div class="col-md-12 team">
+              <div class="team-stdId">
+                <h4>資管所</h4>R10725043
+              </div>
+              <img src="/static/img/team_yan.jpg" class="img-fluid rounded-circle photo" />
+            </div>
+            <div class="col-md-12">
+              <div class="pt-2">
+                <h4 class="mt-4 font-weight-medium mb-0">龔雪燕</h4>
+                <h4 class="mb-3 work">NFT</h4>
+              </div>
+            </div>
+          </div>
+          <!-- Row -->
+        </div>
+        <!-- column  -->
+        <div class="col-1"></div>
+      </div>
+    </section>
+
+    <!-- Modal -->
+    <div class="modal fade-in-modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            Congrats! You're now registered.<br>Let's edit your information first!
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="close" class="btn btn-secondary" data-bs-dismiss="modal">Later</button>
+            <a href="/information"><button type="button" class="btn btn-primary">Go</button></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="footer"></div>
+  </div>
+  <script>
+    $("#action-connect-wallet").mouseover(function () {
+      $("#connect-wallet").attr("src", "/static/img/wallet2.png");
+      $("#connect-wallet-text").show();
+    });
+    $("#action-connect-wallet").mouseleave(function () {
+      $("#connect-wallet").attr("src", "/static/img/wallet.png");
+      $("#connect-wallet-text").hide();
+    });
+    $(".photo").mouseover(function () {
+      $(this).prevAll('.team-stdId').addClass('team-stdId-show');
+    });
+    $(".photo").mouseleave(function () {
+      $(this).prevAll('.team-stdId').removeClass('team-stdId-show');
+    });
+  </script>
+  <script src="/static/js/home.js"></script>
+</body>
+
+</html>
+
+<!-- <div class="spinner">
+  <div class="cube1"></div>
+  <div class="cube2"></div>
+</div> -->

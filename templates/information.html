@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="static/img/logo.ico" type="image/x-icon" />
+  <title>Information | Solution</title>
+  <link rel="stylesheet" href="static/css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8"
+    crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+  <script src="/static/js/info.js"></script>
+  <script>
+    $(function () {
+      $("#header").load("/header");
+      $("#footer").load("/footer");
+    }); 
+  </script>
+</head>
+
+<body>
+  <div class="area noselect">
+    <div class="row chatpage-header">
+      <div class="col-9">
+        <div class="chatting-name"><span><img src="/static/img/unicorn3.png"
+              width="50px"></span>&nbsp&nbsp<span>Solution</span></div>
+      </div>
+      <div class="col-3">
+        <div class="row">
+          <div class="col-9"></div>
+          <div class="col-3">
+            <div id="header"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="context">
+      <h1>My Information</h1>
+    </div>
+    <div class="my-container">
+      <div class="col-lg-7 col-sm-9 my-box info">
+        <div id="info-data">
+          <div class="edit"><button id="edit-button" class="edit-button"><img src="/static/img/edit.png"
+                width="40px"></button></div>
+          <table class="table">
+            <tbody>
+              <tr>
+                <th scope="row">Name</th>
+                <td id="info-data-name">Anya Forger</td>
+              </tr>
+              <tr>
+                <th scope="row">Birthday</th>
+                <td id="info-data-birthday">1999/03/01</td>
+              </tr>
+              <tr>
+                <th scope="row">Gender</th>
+                <td id="info-data-gender">Female</td>
+              </tr>
+              <tr>
+                <th scope="row">Hobby</th>
+                <td id="info-data-hobby">Basketball, Swimming, Piano</td>
+              </tr>
+              <tr>
+                <th scope="row">Address</th>
+                <td id="info-data-addr"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <form id="info-form" action="javascript:void(0);">
+          <div id="info-edit" style="display: none;">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <th scope="row">Name</th>
+                  <td><input id="info-edit-name" class="form-control"></td>
+                </tr>
+                <tr>
+                  <th scope="row">Birthday</th>
+                  <td><input id="info-edit-birthday" class="form-control" type="date"></td>
+                </tr>
+                <tr>
+                  <th scope="row">Gender</th>
+                  <td>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="gender" id="male" value="male">
+                      <label class="form-check-label" for="male">Male</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="gender" id="female" value="female">
+                      <label class="form-check-label" for="female">Female</label>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Hobby</th>
+                  <td><input id="info-edit-hobby" class="form-control"></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="chat-box">
+              <button id="info-edit-submit" class="chat-button" href="#">SUBMIT</a>
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </div>
+    <div id="footer"></div>
+  </div>
+  <script>
+    init();
+    $("#edit-button").click(function () {
+      edit();
+    });
+    $("#info-edit-submit").click(function () {
+      edit_submit();
+    });
+  </script>
+</body>
+
+</html>
