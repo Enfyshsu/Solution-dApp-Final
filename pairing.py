@@ -10,4 +10,7 @@ def pairing_implement(db):
         else:
             already_matched[match['user1']].append(match['user2'])
     
+    pairable = {}
+    for user in all_user:
+        filter(lambda person: person['name'] == 'Pam', people)
     print(already_matched)
