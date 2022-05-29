@@ -9,4 +9,5 @@ def pairing_implement(db):
             already_matched[match['user1']] = [match['user2']]
         else:
             already_matched[match['user1']].append(match['user2'])
+    
     print(already_matched)
