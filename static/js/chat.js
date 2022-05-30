@@ -109,7 +109,7 @@ function renderRecord(record) {
             <div class="time small text-nowrap mt-2">${time}</div>
           </div>&nbsp&nbsp&nbsp
           <div class="flex-shrink-1 bg-light rounded-new py-new px-new ml-3">
-            <div class="font-weight-bold mb-1">${message}</div>
+            <div class="message font-weight-bold mb-1">${message}</div>
           </div>
         </div>`);
       }
@@ -121,7 +121,7 @@ function renderRecord(record) {
             <div class="time small text-nowrap mt-2">${time}</div>
           </div>&nbsp&nbsp&nbsp
           <div class="flex-shrink-1 bg-right rounded-new py-new px-new mr-3">
-            <div class="font-weight-bold mb-1">${message}</div>
+            <div class="message font-weight-bold mb-1">${message}</div>
           </div>
         </div>`);
       }

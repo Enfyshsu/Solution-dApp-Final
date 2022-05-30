@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <link rel="icon" href="static/img/logo.ico" type="image/x-icon" />
-  <title>Meet | Solution</title>
+  <title>Match | Solution</title>
   <link rel="stylesheet" href="static/css/style.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
@@ -13,7 +13,7 @@
     crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-  <!-- <script type="module" src="/static/js/wallet.js"></script> -->
+  <script src="/static/js/meet.js"></script>
   <script>
     $(function () {
       $("#header").load("/header");
@@ -48,36 +48,43 @@
       <div class="row">
         <div id="pair" class="col-lg-6 col-sm-9 my-box">
           <img class="col-lg-6 col-9 photo" src="static/img/nft.png">
-          <div class="name">Anya Forger</div>
+          <div id="meet-name" class="name"></div>
+          <div id="meet-pubkey" class="pubkey"></div>
           <div class="detail">
             <table>
               <tr>
-                <td>AGE</td>
+                <td>BIRTHDAY</td>
+                <td id="meet-birthday"></td>
               </tr>
               <tr>
-                <td>4</td>
+                <td>GENDER</td>
+                <td id="meet-gender"></td>
               </tr>
               <tr>
                 <td>HOBBY</td>
-              </tr>
-              <tr>
-                <td>Computer, Music, Novel, Sleep</td>
-              </tr>
-              <tr>
-                <td>LV.</td>
-              </tr>
-              <tr>
-                <td>9999</td>
+                <td id="meet-hobby"></td>
               </tr>
             </table>
           </div>
           <div class="chat-box">
-            <a class="chat-button" href="/chat">CHAT</a>
+            <a id="meet-action" class="button-look chat-button"></a>
+            <center><div id="meet-wait" class="button-look" style="display: none;"></div></center>
           </div>
         </div>
-        <div id="no-pair" class="col-lg-6 col-sm-9 my-box">
-          <img class="col-lg-6 col-9 photo" src="static/img/nft.png">
-          <div class="name">No</div>
+
+        <div class="row" style="padding-top: 3rem">
+          <ol class="status-list">
+            <li id="meet-like">Like</li>
+            <li id="meet-trans" class="trans">Transaction</li>
+            <li id="meet-paired">Paired</li>
+          </ol>
+        </div>
+
+        <div id="no-pair" class="col-lg-6 col-sm-9 my-box" style="display: none;">
+          <img class="col-lg-6 col-9 photo" src="static/img/despair.png">
+          <div class="name">Oh no...</div>
+          <div class="no-match-text">You don't have match today...
+            <br>Tomorrow is another day 😢</div>
         </div>
       </div>
     </div>

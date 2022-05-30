@@ -47,6 +47,7 @@ function step1Disable() {
         $("#connect-wallet-text").show();
     });
     $("#action-connect-wallet").mouseleave(function () {
+        $("#connect-wallet").attr("src", "/static/img/wallet2.png");
         $("#connect-wallet-text").hide();
     });
 }
@@ -145,7 +146,7 @@ function finishedAll() {
     $("#header-meet").show();
     $("#header-chat").show();
     $("#header-info").show();
-    console.log("first: ", firstTime);
+    // console.log("first: ", firstTime);
     if (firstTime) $("#exampleModal").show(); //remember to remove "!"
 }
 

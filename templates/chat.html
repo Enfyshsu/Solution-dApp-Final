@@ -55,7 +55,8 @@
       <div class="col-9 chat-part">
         <div id="chatting" class="chatting"></div>
         <div class="row">
-          <div class="col-10 "><input id="input-box" type="text"></div>
+          <div class="col-10 "><textarea id="input-box" type="text" rows="1"></textarea></div>
+          <!-- <div class="col-10 "><input id="input-box" type="text"></div> -->
           <div class="col-2"><button id="send-button"><span><img src="/static/img/send.png"
                   width="30px"></span></button></div>
         </div>
@@ -68,11 +69,15 @@
     init();
     $("#input-box").keypress(function (e) {
       var key = e.which;
-      if (key == 13) $("#send-button").click();
+      if (key == 13) {
+        if (!e.shiftKey) {
+          e.preventDefault();
+          myMsg = $("#input-box").val();
+          var remove_space = myMsg.replace(/\s+/g,'');
+          if(remove_space != "") $("#send-button").click();
+        }
+      }
     });
   </script>
 </body>
-
 </html>
-<!-- https://bootdey.com/img/Content/avatar/avatar3.png -->
-<!-- https://bootdey.com/img/Content/avatar/avatar1.png -->

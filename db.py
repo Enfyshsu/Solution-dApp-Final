@@ -10,6 +10,7 @@ def get_db():
     
 def create_tables(conn):
     c = conn.cursor()
+
     c.execute('''CREATE TABLE User
         (pubkey             TEXT PRIMARY KEY     NOT NULL,
          username           TEXT                 NOT NULL,
@@ -30,6 +31,12 @@ def create_tables(conn):
          user              TEXT                  NOT NULL,
          message           TEXT                  NOT NULL,
          timestamp         TEXT                  NOT NULL
+        );''')
+    
+    c.execute('''CREATE TABLE PairingStatus
+        (user              TEXT PRIMARY KEY      NOT NULL,
+         matched_user      TEXT                  NOT NULL,
+         status            INTEGER               NOT NULL
         );''')
     
     print ("create table successfully")
@@ -158,5 +165,27 @@ def get_all_matched(conn):
     cur.execute(f"SELECT * FROM Match")
     rows = cur.fetchall()
     return rows
+
+def reset_pairing_status(conn, pairing_result):
+    cur = conn.cursor()
+    cur.execute(f"DELETE FROM PairingStatus;")
+    for user,matched_user in pairing_result.items():
+        if matched_user != 'None':
+            status = 1
+        else:
+            status = 0
+        cur.execute(f"INSERT INTO PairingStatus (user, matched_user, status) VALUES ('{user}', '{matched_user}', {status});")
+    conn.commit()
+    
+def get_pairing_status(conn, pubkey):
+    cur = conn.cursor()
+    cur.execute(f"SELECT * FROM PairingStatus WHERE user = '{pubkey}';")
+    result = cur.fetchone()
+    return dict(result)
+
+def update_pairing_status(conn, pubkey, status):
+    cur = conn.cursor()
+    cur.execute(f"UPDATE PairingStatus SET status = {status} WHERE user = '{pubkey}';")
+    conn.commit()
 
 #create_tables(get_db())

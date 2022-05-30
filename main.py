@@ -10,7 +10,9 @@ import solana_api
 app = Flask(__name__, static_folder='static', template_folder='templates')
 socketio = SocketIO()
 socketio.init_app(app)
+
 db = get_db()
+
 
 
 def verify_auth(request):
@@ -99,6 +101,26 @@ def check_auth():
     else:
         return json.dumps({'is_auth': False, 'first_time': False})
 
+@app.route("/api/fetch_pairing_status", methods=['POST'])
+def fetch_pairing_status():
+    if verify_auth(request):
+        pubkey = request.cookies.get('pubKey')
+        pairing_status = get_pairing_status(db, pubkey)
+        if pairing_status['status'] != 0:
+            matched_user_pubkey = pairing_status['matched_user']
+            matched_user = get_info_by_pubkey(db, matched_user_pubkey)
+        else:
+            matched_user = {}
+        data = {'pairing_status':pairing_status['status'], 'matched_user':matched_user}
+        return json.dumps({'status': 'success', 'data': data})
+    else:
+        return json.dumps({'status': 'failed'})
+
+# @app.route("/api/like_matched_user", methods=['POST'])
+# def like_matched_user():
+#     if verify_auth(request):
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     # note that we set the 404 status explicitly
@@ -136,7 +158,6 @@ def chat():
         return render_template('chat.html')
     else:
         return redirect('/')
-
 
 @app.route("/meet")
 def meet():
@@ -213,4 +234,4 @@ def on_leave(data):
 
 if __name__ == "__main__":
     #app.run('0.0.0.0',debug=True)
-    socketio.run(app, host='0.0.0.0', debug=True)  
+    socketio.run(app, host='0.0.0.0', debug=True, keyfile='./cert/privkey1.pem', certfile='./cert/cert1.pem') 
