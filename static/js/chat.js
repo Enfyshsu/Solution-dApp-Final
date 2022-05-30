@@ -1,4 +1,6 @@
 var curr_room_id = "1";
+var another_img;
+var my_img;
 function fetchMatchUsers() {
   return new Promise((resolve, reject) => {
     $.ajax({
@@ -15,10 +17,8 @@ function fetchMatchUsers() {
 }
 
 function renderMatchList(data) {
-  console.log(data);
   if (data) {
     data.forEach(function (value) {
-      // console.log(value['username']);
       var room_id = value['room_id'];
       var username = value['username'];
       var pubkey = "@" + value['pubkey'].slice(0, 20) + "...";
@@ -30,7 +30,7 @@ function renderMatchList(data) {
     });
   }
   else {
-    window.location.replace("/nomatch");
+    window.location.replace("/nofriend");
   }
 }
 
@@ -47,7 +47,6 @@ async function init() {
 }
 
 function joinFirstRoom(data) {
-  console.log(data[0]['room_id']);
   var room_id = data[0]['room_id'];
   var pubkey = $.cookie("pubKey");
   var auth = $.cookie("auth");
@@ -70,7 +69,6 @@ async function joinRoom(room_id, pubkey, auth) {
       $('#chatting').html(""); // reload
     }
     curr_room_id = room_id;
-    console.log(curr_room_id);
     socket.emit('join_room', { room_id: room_id, pubkey: pubkey, auth: auth });
   }
 }
@@ -94,7 +92,7 @@ function fetchRecord(room_id) {
   })
 }
 
-function renderRecord(record) {
+function renderRecord(record, another_img_url, my_img_url) {
   if (record) {
     record.forEach(function (record) {
       var pubkey = record['pubkey'];
@@ -105,7 +103,7 @@ function renderRecord(record) {
         $('#chatting').append(
           `<div class="chat-message-left pb-4">
           <div>
-            <img src="/static/img/head1.jpg" class="rounded-circle mr-1" alt="Sharon Lessman" width="40" height="40">
+            <img class="rounded-circle mr-1 another-img" width="40" height="40" src=${another_img_url} onclick="showInfoModal()">
             <div class="time small text-nowrap mt-2">${time}</div>
           </div>&nbsp&nbsp&nbsp
           <div class="flex-shrink-1 bg-light rounded-new py-new px-new ml-3">
@@ -117,7 +115,7 @@ function renderRecord(record) {
         $('#chatting').append(
           `<div class="chat-message-right mb-4">
           <div>
-            <img src="/static/img/head2.jpg" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
+            <a href="/information"><img class="rounded-circle mr-1 my-img" width="40" height="40" src=${my_img_url}></a>
             <div class="time small text-nowrap mt-2">${time}</div>
           </div>&nbsp&nbsp&nbsp
           <div class="flex-shrink-1 bg-right rounded-new py-new px-new mr-3">
@@ -137,17 +135,19 @@ window.addEventListener('beforeunload', function (e) {
 var socket = io();
 socket.on('connect', function () {
   socket.on('success_joind', async function (message) {
-    console.log(message);
+    showInfo(message['another_user']);
     $("#chatting-name").text(message['another_user']['username']);
     recordData = await fetchRecord(message['room_id']);
     if (recordData['status'] === "success") {
-      renderRecord(recordData['data']);
+      another_img = message['another_user']['img_url'];
+      my_img = message['my_img_url']
+      renderRecord(recordData['data'], another_img, my_img);
       $("#status").attr("class", message['another_user']['active'] ? 'status online' : 'status offline');
       $("#status-text").html(message['another_user']['active'] ? 'online' : 'offline');
     }
   });
   socket.on('message_response', function (message) {
-    renderRecord([message]);
+    renderRecord([message], another_img, my_img);
     document.getElementById('footer').scrollIntoView(false);
   });
   socket.on('change_status', function (message) {
@@ -160,4 +160,23 @@ socket.on('connect', function () {
       $("#input-box").val("");
     }
   });
+});
+
+function showInfo(another_user) {
+  $("#chat-nft").attr("src", another_user['img_url']);
+  $("#solscan-url").attr("href", "https://solscan.io/token/" + another_user['nft_addr'] + "?cluster=devnet");
+  $("#chat-name").text(another_user['username']);
+  $("#chat-gender").text(another_user['gender']);
+  $("#chat-birthday").text(another_user['birthday']);
+  $("#chat-hobby").text(another_user['hobby']);
+}
+
+
+function showInfoModal()
+{
+  $("#showInfoModal").show();
+}
+
+$("#info-close").click(function () {
+  $("#showInfoModal").attr("style", "display: none");
 });

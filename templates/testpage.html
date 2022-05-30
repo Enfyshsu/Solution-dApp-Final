@@ -1,7 +1,47 @@
 <html>
-
-<body>
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script> 
+  <script src="https://bundle.run/safe-buffer@5.2.1"></script>
+ <body>
     hello
-</body>
+  </body>
+  <script>
+    window.Buffer = safeBuffer.Buffer;
+    async function sign() {
+      const isConnected = await window.solflare.connect();
+      if (isConnected) {
+        const info = await fetch('/get_transation_message').then(response => {
+          return response.json();
+	}).then(response => {
+	  return response.data;
+	});
+	console.log(info);
 
+        const matchUsers = [new solanaWeb3.PublicKey(info.matchUsers[0]), new solanaWeb3.PublicKey(info.matchUsers[1])];
+
+        let transaction = new solanaWeb3.Transaction().add(
+          solanaWeb3.SystemProgram.transfer({
+            fromPubkey: matchUsers[0],
+            toPubkey: matchUsers[0],
+            lamports: 100,
+          }),
+          solanaWeb3.SystemProgram.transfer({
+            fromPubkey: matchUsers[1],
+            toPubkey: matchUsers[1],
+            lamports: 100,
+          })
+        );
+
+        transaction.recentBlockhash = info.blockhash;
+        transaction.feePayer = matchUsers[0];
+        let signed = await window.solflare.signTransaction(transaction);
+        console.log(signed);
+	let to_send_signature;
+	signed.signatures.forEach((signature_info) => {
+          if (signature_info.publicKey.equals(window.solflare.publicKey)) to_send_signature = signature_info.signature;
+	});
+	console.log(to_send_signature);
+      }
+    }
+    sign();
+  </script>
 </html>

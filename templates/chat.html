@@ -16,7 +16,6 @@
   <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"
     integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k"
     crossorigin="anonymous"></script>
-  <script src="/static/js/chat.js"></script>
   <script>
     $(function () {
       $("#header").load("/header");
@@ -42,7 +41,26 @@
         <div class="row">
           <div class="col-9"></div>
           <div class="col-3">
-            <div id="header"></div>
+            <div id="menuToggle">
+              <input type="checkbox" />
+              <span></span>
+              <span></span>
+              <span></span>
+              <ul id="menu">
+                <a id="header-home" href="/">
+                  <li>Home</li>
+                </a>
+                <a id="header-meet" href="/meet">
+                  <li>Meet</li>
+                </a>
+                <a id="header-info" href="/information">
+                  <li>Information</li>
+                </a>
+                <a id="header-chat" href="/chat">
+                  <li>Chatroom</li>
+                </a>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -56,15 +74,53 @@
         <div id="chatting" class="chatting"></div>
         <div class="row">
           <div class="col-10 "><textarea id="input-box" type="text" rows="1"></textarea></div>
-          <!-- <div class="col-10 "><input id="input-box" type="text"></div> -->
           <div class="col-2"><button id="send-button"><span><img src="/static/img/send.png"
                   width="30px"></span></button></div>
         </div>
+
+        <!-- Modal -->
+        <div class="my-modal fade-in-modal" id="showInfoModal" tabindex="-1" aria-labelledby="firstTimeModalLabel"
+          aria-hidden="true" style="display: none;">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-body">
+                <table class="chat-info">
+                  <tr>
+                    <td>NFT</td>
+                    <td><a id="solscan-url" target="_blank"><img id="chat-nft" class="nft-img" width="40%"></a></td>
+                  </tr>
+                  <tr>
+                    <td>NAME</td>
+                    <td id="chat-name"></td>
+                  </tr>
+                  <tr>
+                    <td>BIRTHDAY</td>
+                    <td id="chat-birthday"></td>
+                  </tr>
+                  <tr>
+                    <td>GENDER</td>
+                    <td id="chat-gender"></td>
+                  </tr>
+                  <tr>
+                    <td>HOBBY</td>
+                    <td id="chat-hobby"></td>
+                  </tr>
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button type="button" id="info-close" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <!-- <a href="/information"><button type="button" class="btn btn-primary">Go</button></a> -->
+              </div>
+            </div>
+          </div>
+        </div>
+
         <footer id="footer"></footer>
       </div>
     </div>
   </div>
   </div>
+  <script src="/static/js/chat.js"></script>
   <script>
     init();
     $("#input-box").keypress(function (e) {
@@ -73,11 +129,13 @@
         if (!e.shiftKey) {
           e.preventDefault();
           myMsg = $("#input-box").val();
-          var remove_space = myMsg.replace(/\s+/g,'');
-          if(remove_space != "") $("#send-button").click();
+          var remove_space = myMsg.replace(/\s+/g, '');
+          if (remove_space != "") $("#send-button").click();
         }
       }
     });
   </script>
+
 </body>
+
 </html>

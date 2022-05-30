@@ -2,7 +2,7 @@ import json
 from flask import Flask, render_template, request, redirect, escape
 from flask_socketio import SocketIO, join_room, leave_room
 from datetime import datetime,timezone,timedelta
-from verify import verify_signed_msg
+from verify import verify_signed_msg, get_valid_nft
 from db import *
 from pairing import pairing_implement 
 import solana_api
@@ -21,22 +21,27 @@ def verify_auth(request):
         pubKey = request.cookies.get('pubKey')
         verified = verify_signed_msg('Authentication', signed_auth, pubKey)
     except:
-        return False
+        return {'status': False, 'reason': 'Auth'}
     
     if verified:
         # check whether the verified user registed in db or not
         if get_user_by_pubkey(db, pubKey) is None:
             register_new_user(db, pubKey)
-        return True
+
+        if check_user_have_nft(db, pubKey):
+            return {'status': True}
+        else:
+            return {'status': False, 'reason': 'NFT'}
+        
     else:
-        return False
+        return {'status': False, 'reason': 'Auth'}
 
 user_room_pair = {}
 
 
 @app.route("/api/fetch_matched_users", methods=['POST'])
 def fetch_matched_users():
-    if verify_auth(request):
+    if verify_auth(request)['status']:
         pubkey = request.cookies.get('pubKey')
         matched_user = get_matched_user_by_pubkey(db, pubkey)
         return json.dumps(matched_user)
@@ -45,7 +50,7 @@ def fetch_matched_users():
 
 @app.route("/api/fetch_user_info", methods=['POST'])
 def fetch_user_info():
-    if verify_auth(request):
+    if verify_auth(request)['status']:
         pubkey = request.cookies.get('pubKey')
         user_info = get_info_by_pubkey(db, pubkey)
         return json.dumps(user_info)
@@ -54,7 +59,7 @@ def fetch_user_info():
 
 @app.route("/api/edit_user_info", methods=['POST'])
 def edit_user_info():
-    if verify_auth(request):
+    if verify_auth(request)['status']:
         pubkey = request.cookies.get('pubKey')
         data = request.json
         birthday = data['birthday']
@@ -71,7 +76,7 @@ def edit_user_info():
 
 @app.route("/api/fetch_chat_records", methods=['POST'])
 def fetch_chat_records():
-    if verify_auth(request):
+    if verify_auth(request)['status']:
         room_id  = request.json['room_id']
         pubkey = request.cookies.get('pubKey')
         if pubkey in user_room_pair and user_room_pair[pubkey] == room_id: 
@@ -95,17 +100,34 @@ def check_auth():
         # check whether the verified user registed in db or not
         if get_user_by_pubkey(db, pubKey) is None:
             register_new_user(db, pubKey)
-            return json.dumps({'is_auth': True, 'first_time': True})
+            tmp_response =  json.dumps({'is_auth': True, 'first_time': True})
         else:
-            return json.dumps({'is_auth': True, 'first_time': False})
+            tmp_response =  json.dumps({'is_auth': True, 'first_time': False})
+
+        users_nft = get_valid_nft(pubKey)
+        if users_nft is not None:
+            update_user_nft(db, pubKey, users_nft['mint'], users_nft['img_url'])
+        else:
+            clear_user_nft(db, pubKey)
+            # clean this account in meet page
+            pairing_status = get_pairing_status(db, pubKey)
+            if pairing_status['status'] != 0:
+                update_pairing_status(db, pairing_status['matched_user'], 0)
+            
+        return tmp_response
     else:
         return json.dumps({'is_auth': False, 'first_time': False})
 
 @app.route("/api/fetch_pairing_status", methods=['POST'])
 def fetch_pairing_status():
-    if verify_auth(request):
+    if verify_auth(request)['status']:
         pubkey = request.cookies.get('pubKey')
         pairing_status = get_pairing_status(db, pubkey)
+
+        #new user, have not pairing status
+        if pairing_status is None:
+            return json.dumps({'status': 'success', 'data': {'pairing_status':-1, 'matched_user':{}}})
+
         if pairing_status['status'] != 0:
             matched_user_pubkey = pairing_status['matched_user']
             matched_user = get_info_by_pubkey(db, matched_user_pubkey)
@@ -114,11 +136,27 @@ def fetch_pairing_status():
         data = {'pairing_status':pairing_status['status'], 'matched_user':matched_user}
         return json.dumps({'status': 'success', 'data': data})
     else:
-        return json.dumps({'status': 'failed'})
+        return json.dumps({'status': 'failed', 'reason':'authentication failed'})
 
-# @app.route("/api/like_matched_user", methods=['POST'])
-# def like_matched_user():
-#     if verify_auth(request):
+@app.route("/api/like_matched_user", methods=['POST'])
+def like_matched_user():
+    if verify_auth(request)['status']:
+        pubkey = request.cookies.get('pubKey')
+        pairing_status = get_pairing_status(db, pubkey)
+        if pairing_status['status'] != 1:
+            return json.dumps({'status': 'failed', 'reason':'Invalid pairing status.'})
+        else:
+            matched_user_pubkey = pairing_status['matched_user']
+            matched_user_pairing_status = get_pairing_status(db, matched_user_pubkey)
+            assert matched_user_pairing_status['status'] in [1, 2]
+            if matched_user_pairing_status['status'] == 1:
+                update_pairing_status(db, pubkey, 2)
+            else:
+                update_pairing_status(db, pubkey, 3)
+                update_pairing_status(db, matched_user_pubkey, 3)
+            return json.dumps({'status': 'success'})      
+    else:
+        return json.dumps({'status': 'failed', 'reason':'Authentication failed'})
 
 
 @app.errorhandler(404)
@@ -133,8 +171,14 @@ def index():
     
 @app.route("/test")
 def test():
-    solana_api.test()
-    return render_template('home.html')
+    #solana_api.test()
+    return render_template('testpage.html')
+
+
+@app.route("/get_transation_message")
+def get_transation_message():
+    return solana_api.get_transation_message()
+
 
 @app.route("/match")
 def match():
@@ -154,25 +198,30 @@ def pairing():
 @app.route("/chat")
 def chat():
     # In particular, if user pass the test, cookie must contain 'pubkey' & 'auth'
-    if verify_auth(request):
+    if verify_auth(request)['status']:
         return render_template('chat.html')
+    elif verify_auth(request)['reason'] == "NFT":
+        return redirect('/nonft')
     else:
         return redirect('/')
 
 @app.route("/meet")
 def meet():
-    if verify_auth(request):
+    if verify_auth(request)['status']:
         return render_template('meet.html')
+    elif verify_auth(request)['reason'] == "NFT":
+        return redirect('/nonft')
     else:
         return redirect('/')
 
 @app.route("/information")
 def information():
-    if verify_auth(request):
+    if verify_auth(request)['status']:
         return render_template('information.html')
+    elif verify_auth(request)['reason'] == "NFT":
+        return redirect('/nonft')
     else:
         return redirect('/')
-    
 
 @app.route("/header")
 def header():
@@ -185,6 +234,14 @@ def footer():
 @app.route("/nomatch")
 def nomatch():
     return render_template('nomatch.html')
+
+@app.route("/nofriend")
+def nofriend():
+    return render_template('nofriend.html')
+
+@app.route("/nonft")
+def nonft():
+    return render_template('nonft.html')
 
 @socketio.on('message')
 def handle_message(data):
@@ -214,6 +271,7 @@ def on_join(data):
         res = {}
         res['room_id'] = room_id
         res['another_user'] = another_user_info 
+        res['my_img_url'] = get_info_by_pubkey(db,pubkey)['img_url']
         print(f'{pubkey} just join {room_id}.')
         socketio.emit('change_status', {'active':True}, to=room_id, include_self=False)
         socketio.emit('success_joind', res, to=request.sid)

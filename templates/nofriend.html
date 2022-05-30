@@ -12,7 +12,6 @@
     integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8"
     crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
   <script>
     $(function () {
       $("#navbar").load("/header");
@@ -24,30 +23,17 @@
 <body>
   <div class="area noselect">
     <div id="navbar"></div>
-    <div class="context" id="unlucky">
-      <h1>Sorry QQ</h1>
-      <h1>You don't have a match today... 😢😢</h1>
-      <h1>Please come here tomorrow!</h1>
-    </div>
-    <div class="context" id="newfriend">
-      <h1>Hi!</h1>
-      <h1>You're our new friend!</h1>
-      <h1>Please come here tomorrow!</h1>
+    <div class="context">
+      <h1>QQ</h1>
+      <h1>You don't have a friend... 😢😢</h1>
+      <h1>Let's meet a friend first!</h1>
+
+      <div class="chat-box">
+        <a class="button-look chat-button" href="/meet">MATCH</a>
+      </div>
     </div>
     <div id="footer"></div>
   </div>
 </body>
-
-<script>
-  if ($.cookie("pairing_status") == 0) {
-    $("#unlucky").show();
-    $("#newfriend").hide();
-  }
-  else {
-    $("#unlucky").hide();
-    $("#newfriend").show();
-  }
-
-</script>
 
 </html>

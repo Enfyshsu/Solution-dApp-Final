@@ -15,13 +15,14 @@ function fetchUserInfo() {
 }
 
 function renderUserInfo(data) {
-  // console.log($("#info-data-name").text());
+  $("#info-photo").attr("src", data['img_url']);
+  $("#info-solscan-url").attr("href", "https://solscan.io/token/" + data['nft_addr'] + "?cluster=devnet");
   $("#info-data-name").text(data['username']);
   $("#info-data-birthday").text(data['birthday']);
   $("#info-data-gender").text(data['gender']);
   $("#info-data-hobby").text(data['hobby']);
   $("#info-data-addr").text(data['pubkey']);
-
+  $("#info-data-nft-addr").text(data['nft_addr']);
   $("#info-data").show();
   $("#info-edit").hide();
 }

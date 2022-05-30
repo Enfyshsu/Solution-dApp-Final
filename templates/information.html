@@ -16,7 +16,7 @@
   <script src="/static/js/info.js"></script>
   <script>
     $(function () {
-      $("#header").load("/header");
+      $("#navbar").load("/header");
       $("#footer").load("/footer");
     }); 
   </script>
@@ -24,49 +24,46 @@
 
 <body>
   <div class="area noselect">
-    <div class="row chatpage-header">
-      <div class="col-9">
-        <div class="chatting-name"><span><img src="/static/img/unicorn3.png"
-              width="50px"></span>&nbsp&nbsp<span>Solution</span></div>
-      </div>
-      <div class="col-3">
-        <div class="row">
-          <div class="col-9"></div>
-          <div class="col-3">
-            <div id="header"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div id="navbar"></div>
     <div class="context">
       <h1>My Information</h1>
     </div>
     <div class="my-container">
       <div class="col-lg-7 col-sm-9 my-box info">
         <div id="info-data">
-          <div class="edit"><button id="edit-button" class="edit-button"><img src="/static/img/edit.png"
-                width="40px"></button></div>
+          <center><a id="info-solscan-url" target="_blank"><img id="info-photo" class="photo" width="30%"></a></center>
+          <div class="edit">
+            <button id="edit-button" class="edit-button"><img src="/static/img/edit.png" width="40px"></button>
+          </div>
           <table class="table">
             <tbody>
+              <!-- <tr>
+                <th scope="row">NFT</th>
+                <td><a id="info-solscan-url" target="_blank"><img id="info-photo" class="nft-img" width="30%"></a></td>
+              </tr> -->
               <tr>
                 <th scope="row">Name</th>
-                <td id="info-data-name">Anya Forger</td>
+                <td id="info-data-name"></td>
               </tr>
               <tr>
                 <th scope="row">Birthday</th>
-                <td id="info-data-birthday">1999/03/01</td>
+                <td id="info-data-birthday"></td>
               </tr>
               <tr>
                 <th scope="row">Gender</th>
-                <td id="info-data-gender">Female</td>
+                <td id="info-data-gender"></td>
               </tr>
               <tr>
                 <th scope="row">Hobby</th>
-                <td id="info-data-hobby">Basketball, Swimming, Piano</td>
+                <td id="info-data-hobby"></td>
               </tr>
               <tr>
                 <th scope="row">Address</th>
                 <td id="info-data-addr"></td>
+              </tr>
+              <tr>
+                <th scope="row">NFT Address</th>
+                <td id="info-data-nft-addr"></td>
               </tr>
             </tbody>
           </table>

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <link rel="icon" href="static/img/logo.ico" type="image/x-icon" />
-  <title>NoMatch | Solution</title>
+  <title>NoNFT | Solution</title>
   <link rel="stylesheet" href="static/css/style.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
@@ -12,7 +12,6 @@
     integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8"
     crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
   <script>
     $(function () {
       $("#navbar").load("/header");
@@ -24,30 +23,26 @@
 <body>
   <div class="area noselect">
     <div id="navbar"></div>
-    <div class="context" id="unlucky">
-      <h1>Sorry QQ</h1>
-      <h1>You don't have a match today... 😢😢</h1>
-      <h1>Please come here tomorrow!</h1>
-    </div>
-    <div class="context" id="newfriend">
-      <h1>Hi!</h1>
-      <h1>You're our new friend!</h1>
-      <h1>Please come here tomorrow!</h1>
+    <div class="context">
+      <h1>QQ</h1>
+      <h1>You don't have NFT... 😢😢</h1>
+      <h1>Please buy an NFT first.</h1>
+
+      <div class="chat-box">
+        <a class="button-look chat-button" href="#">BUY</a>
+      </div>
     </div>
     <div id="footer"></div>
   </div>
+  <script>
+    init();
+    $("#edit-button").click(function () {
+      edit();
+    });
+    $("#info-edit-submit").click(function () {
+      edit_submit();
+    });
+  </script>
 </body>
-
-<script>
-  if ($.cookie("pairing_status") == 0) {
-    $("#unlucky").show();
-    $("#newfriend").hide();
-  }
-  else {
-    $("#unlucky").hide();
-    $("#newfriend").show();
-  }
-
-</script>
 
 </html>

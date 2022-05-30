@@ -1,7 +1,9 @@
+from httpx import get
 from nacl.signing import VerifyKey
 from solana.publickey import PublicKey
 from base58 import b58decode
 import hashlib 
+from solana_api import get_nfts_by_wallet, get_img_url
 
 def verify_signed_msg(msg, signed, publicKey):
     pubkey = bytes(PublicKey(publicKey))
@@ -30,5 +32,18 @@ def generate_match_id(pubkey1, pubkey2):
     h = hashlib.sha256(str(pubkey_to_int(pubkey2) + pubkey_to_int(pubkey1)).encode())
     return h.hexdigest()
 
+CREATOR = "J1BTsbeBNxX6GHZtN5QoukJRteai1KTsvc7LF994KGNT"
 
-    
+def get_valid_nft(pubkey):
+    api_res = get_nfts_by_wallet(pubkey)
+    res = None
+    if api_res['status'] == 'success':
+        metadatas = api_res['data']
+        for metadata in metadatas:
+            creators =  metadata['data']['creators']
+            if len(creators) == 2 and creators[1]['address'] == CREATOR and creators[1]['verified'] == 1:
+                res = metadata
+                res['img_url'] = get_img_url(metadata['data']['uri'])
+                break
+
+    return res

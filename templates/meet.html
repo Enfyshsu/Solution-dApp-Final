@@ -13,10 +13,9 @@
     crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-  <script src="/static/js/meet.js"></script>
   <script>
     $(function () {
-      $("#header").load("/header");
+      $("#navbar").load("/header");
       $("#footer").load("/footer");
     }); 
   </script>
@@ -24,20 +23,7 @@
 
 <body>
   <div class="area noselect">
-    <div class="row chatpage-header">
-      <div class="col-9">
-        <div class="chatting-name"><span><img src="/static/img/unicorn3.png"
-              width="50px"></span>&nbsp&nbsp<span>Solution</span></div>
-      </div>
-      <div class="col-3">
-        <div class="row">
-          <div class="col-9"></div>
-          <div class="col-3">
-            <div id="header"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div id="navbar"></div>
     <div class="row">
       <div class="context">
         <h1>Meet</h1>
@@ -47,7 +33,7 @@
     <div class="my-container">
       <div class="row">
         <div id="pair" class="col-lg-6 col-sm-9 my-box">
-          <img class="col-lg-6 col-9 photo" src="static/img/nft.png">
+          <a id="meet-solscan-url" target="_blank"><img id="meet-photo" class="col-lg-6 col-9 photo"></a>
           <div id="meet-name" class="name"></div>
           <div id="meet-pubkey" class="pubkey"></div>
           <div class="detail">
@@ -68,28 +54,54 @@
           </div>
           <div class="chat-box">
             <a id="meet-action" class="button-look chat-button"></a>
-            <center><div id="meet-wait" class="button-look" style="display: none;"></div></center>
+            <center>
+              <div id="meet-wait" class="button-look" style="display: none;"></div>
+            </center>
           </div>
         </div>
 
-        <div class="row" style="padding-top: 3rem">
-          <ol class="status-list">
-            <li id="meet-like">Like</li>
-            <li id="meet-trans" class="trans">Transaction</li>
-            <li id="meet-paired">Paired</li>
-          </ol>
+        <div class="row status-row">
+          <div class="col"></div>
+          <div class="col-lg-4 col-sm-10">
+            <div class="row">
+              <div class="col">
+                <center>
+                  <div id="meet-like" class="circle"></div><br>
+                  <div class="status-line-text">Like</div>
+                </center>
+              </div>
+              <div class="col">
+                <center>
+                  <div id="meet-trans" class="circle"></div><br>
+                  <div class="status-line-text">Transaction</div>
+                </center>
+              </div>
+              <div class="col">
+                <center>
+                  <div id="meet-paired" class="circle"></div><br>
+                  <div class="status-line-text">Paired</div>
+                </center>
+              </div>
+            </div>
+          </div>
+          <div class="col"></div>
         </div>
 
         <div id="no-pair" class="col-lg-6 col-sm-9 my-box" style="display: none;">
           <img class="col-lg-6 col-9 photo" src="static/img/despair.png">
           <div class="name">Oh no...</div>
           <div class="no-match-text">You don't have match today...
-            <br>Tomorrow is another day 😢</div>
+            <br>Tomorrow is another day 😢
+          </div>
         </div>
       </div>
     </div>
     <div id="footer"></div>
   </div>
+  <script src="/static/js/meet.js"></script>
+  <script>
+    fetchPairing();
+  </script>
 </body>
 
 </html>

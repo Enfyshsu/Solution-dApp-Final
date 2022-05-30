@@ -2,7 +2,7 @@ from db import *
 import random
 
 def pairing_implement(db):
-    all_user = [user['pubkey'] for user in get_all_user(db)]
+    all_user = [user['pubkey'] for user in get_all_user(db) if user['nft_addr'] is not None]
     all_match = get_all_matched(db)
     already_matched = {}
     for match in all_match:

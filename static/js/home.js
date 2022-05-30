@@ -146,10 +146,9 @@ function finishedAll() {
     $("#header-meet").show();
     $("#header-chat").show();
     $("#header-info").show();
-    // console.log("first: ", firstTime);
-    if (firstTime) $("#exampleModal").show(); //remember to remove "!"
+    if(firstTime) $("#firstTimeModal").show(); //remember to remove "!"
 }
 
 $("#close").click(function () {
-    $("#exampleModal").hide();
+    $("#firstTimeModal").hide();
 })

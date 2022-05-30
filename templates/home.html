@@ -18,32 +18,26 @@
   <script src="/static/js/wallet.js"></script>
   <script>
     $(function () {
-      $("#header").load("/header");
+      $("#navbar").load("/header");
       $("#footer").load("/footer");
     }); 
   </script>
 </head>
 
 <body>
-
   <div class="area noselect">
-    <div class="row chatpage-header">
-      <div class="col-9">
-        <div class="chatting-name"><span><img src="/static/img/unicorn3.png"
-              width="50px"></span>&nbsp&nbsp<span>Solution</span></div>
-      </div>
-      <div class="col-3">
-        <div class="row">
-          <div class="col-9"></div>
-          <div class="col-3">
-            <div id="header"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div id="navbar"></div>
     <section id="home-title" class="home-section">
-      <img src="/static/img/unicorn2.png" width="250px" class="unicorn" style="transform:scaleX(-1)">
-      <img src="/static/img/unicorn4.png" class="unicorn" width="250px">
+      <center>
+        <div id="unicorns">
+          <img id="unicorn-left" src="/static/img/unicorn2.png" width="250px" class="unicorn"
+            style="transform:scaleX(-1)">
+          <img id="unicorn-right" src="/static/img/unicorn4.png" class="unicorn" width="250px">
+          <div id="SpeechBubble">I like you 😎</div>
+          <div id="SpeechBubble2">I like you too 🥰</div>
+        </div>
+      </center>
+
       <h1>Solution</h1>
       <h2>Solution is the <span class="highlight">second</span> ever Dating app<br>being built on Blockchain 😎😎</h2>
     </section>
@@ -173,7 +167,7 @@
               <div class="team-stdId">
                 <h4>網媒所</h4>R10944012
               </div>
-              <img src="/static/img/unicorn1.png" class="img-fluid rounded-circle photo" />
+              <img src="/static/img/team-yu.png" class="img-fluid rounded-circle photo" />
             </div>
             <div class="col-md-12">
               <div class="pt-2">
@@ -210,7 +204,7 @@
     </section>
 
     <!-- Modal -->
-    <div class="modal fade-in-modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+    <div class="modal fade-in-modal" id="firstTimeModal" tabindex="-1" aria-labelledby="firstTimeModalLabel"
       aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -242,6 +236,42 @@
     $(".photo").mouseleave(function () {
       $(this).prevAll('.team-stdId').removeClass('team-stdId-show');
     });
+
+    var unicorn_left = $("#unicorn-left");
+    var unicorn_right = $("#unicorn-right");
+    var speechBubble = $("#SpeechBubble");
+    var speechBubble2 = $("#SpeechBubble2");
+
+    unicorn_left.hover(
+      function () {
+        speechBubble.css({
+          "animation-name": "expand-bounce",
+          "animation-duration": "0.4s"
+        });
+      },
+      function () {
+        speechBubble.css({
+          "animation-name": "shrink",
+          "animation-duration": "0.2s"
+        });
+      }
+    );
+
+    unicorn_right.hover(
+      function () {
+        speechBubble2.css({
+          "animation-name": "expand-bounce",
+          "animation-duration": "0.4s"
+        });
+      },
+      function () {
+        speechBubble2.css({
+          "animation-name": "shrink",
+          "animation-duration": "0.2s"
+        });
+      }
+    );
+
   </script>
   <script src="/static/js/home.js"></script>
 </body>

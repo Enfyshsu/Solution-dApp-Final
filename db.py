@@ -1,3 +1,4 @@
+from os import curdir
 import sqlite3
 import hashlib
 from verify import generate_match_id
@@ -16,7 +17,9 @@ def create_tables(conn):
          username           TEXT                 NOT NULL,
          birthday           TEXT                 NOT NULL,
          gender             TEXT                 NOT NULL,
-         hobby              TEXT                 NOT NULL
+         hobby              TEXT                 NOT NULL,
+         nft_addr           TEXT                         ,
+         img_url            TEXT                 
         );''')
     
     c.execute('''CREATE TABLE Match
@@ -99,7 +102,9 @@ def get_matched_user_by_pubkey(conn, pubkey):
             tmp['room_id'] = match_ids[i]
             tmp['pubkey'] = rows[i]['pubkey']
             tmp['username'] = rows[i]['username']
-            res.append(tmp)
+            # if the matched user still have nft
+            if rows[i]['nft_addr']:
+                res.append(tmp)
             
         return res
         
@@ -112,6 +117,8 @@ def get_info_by_pubkey(conn, pubkey):
     res['gender'] = user['gender']
     res['hobby'] = user['hobby']
     res['pubkey'] = user['pubkey']
+    res['img_url'] = user['img_url']
+    res['nft_addr'] = user['nft_addr']
     return res
 
 def set_info_by_pubkey(conn, pubkey, username, birthday, gender, hobby):
@@ -127,10 +134,7 @@ def get_another_user_info(conn, pubkey, room_id):
     assert row
     cur.execute(f"SELECT * FROM User WHERE pubkey = '{row['user2']}'")
     row = cur.fetchone()
-    res = {}
-    res['username'] = row['username']
-    res['pubkey'] = row['pubkey']
-    return res
+    return dict(row)
 
 def commit_chat_record(conn, pubkey, room_id, msg, timestamp):
     cur = conn.cursor()
@@ -181,11 +185,33 @@ def get_pairing_status(conn, pubkey):
     cur = conn.cursor()
     cur.execute(f"SELECT * FROM PairingStatus WHERE user = '{pubkey}';")
     result = cur.fetchone()
-    return dict(result)
+    if result:
+        return dict(result)
+    else:
+        # new user
+        return None
 
 def update_pairing_status(conn, pubkey, status):
     cur = conn.cursor()
     cur.execute(f"UPDATE PairingStatus SET status = {status} WHERE user = '{pubkey}';")
     conn.commit()
 
+def update_user_nft(conn, pubkey, nft_pubkey, img_url):
+    cur = conn.cursor()
+    cur.execute(f"UPDATE User SET nft_addr = '{nft_pubkey}', img_url='{img_url}' WHERE pubkey = '{pubkey}';")
+    conn.commit()
+
+def clear_user_nft(conn, pubkey):
+    cur = conn.cursor()
+    cur.execute(f"UPDATE User SET nft_addr = null, img_url = null WHERE pubkey = '{pubkey}';")
+    conn.commit()
+
+def check_user_have_nft(conn, pubkey):
+    cur = conn.cursor()
+    cur.execute(f"SELECT * FROM User WHERE pubkey = '{pubkey}' and nft_addr IS NOT NULL and img_url IS NOT NULL;")
+    res = cur.fetchone()
+    if res:
+        return True
+    else:
+        return False
 #create_tables(get_db())
