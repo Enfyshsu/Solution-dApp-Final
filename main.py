@@ -10,9 +10,10 @@ import solana_api
 app = Flask(__name__, static_folder='static', template_folder='templates')
 socketio = SocketIO()
 socketio.init_app(app)
-
 db = get_db()
 
+user_room_pair = {}
+sign_queue = {}
 
 
 def verify_auth(request):
@@ -35,8 +36,6 @@ def verify_auth(request):
         
     else:
         return {'status': False, 'reason': 'Auth'}
-
-user_room_pair = {}
 
 
 @app.route("/api/fetch_matched_users", methods=['POST'])
@@ -106,12 +105,12 @@ def check_auth():
 
         users_nft = get_valid_nft(pubKey)
         if users_nft is not None:
-            update_user_nft(db, pubKey, users_nft['mint'], users_nft['img_url'])
+            update_user_nft(db, pubKey, users_nft['mint'], users_nft['img_url'], users_nft['level'])
         else:
             clear_user_nft(db, pubKey)
             # clean this account in meet page
             pairing_status = get_pairing_status(db, pubKey)
-            if pairing_status['status'] != 0:
+            if pairing_status is not None and pairing_status['status'] != 0:
                 update_pairing_status(db, pairing_status['matched_user'], 0)
             
         return tmp_response
@@ -154,9 +153,51 @@ def like_matched_user():
             else:
                 update_pairing_status(db, pubkey, 3)
                 update_pairing_status(db, matched_user_pubkey, 3)
+                assert check_match_exist(db, pubkey, matched_user_pubkey) == False
+                add_match_record(db, pubkey, matched_user_pubkey)
             return json.dumps({'status': 'success'})      
     else:
         return json.dumps({'status': 'failed', 'reason':'Authentication failed'})
+
+@app.route("/api/do_transaction", methods=['POST'])
+def do_transaction():
+    if verify_auth(request)['status']:
+        pubkey = request.cookies.get('pubKey')
+        data = request.json
+        blockhash = data['blockhash']
+        signature = data['signature']
+        room_id = data['room_id']
+        if blockhash in sign_queue:
+            sign_data = sign_queue[blockhash]
+            sign_data[pubkey] = signature
+            print(sign_data)
+            # we got two signed transaction
+            if '' not in sign_data.values():
+                print('sending tx')
+                req = {
+                    'blockhash' :blockhash,
+                    'matchUsers':[],
+                    'signatures':[]
+                }
+                for key,val in sign_data.items():
+                    req['matchUsers'].append(key)
+                    req['signatures'].append(val)
+
+                del sign_queue[blockhash]
+                res = solana_api.send_transaction(req)
+                print(res)
+                assert res['status'] == 'success'
+                txid = res['txid']
+                set_txid(db, room_id, txid)
+                socketio.emit('get_tx_success',txid ,to=room_id)
+                
+                return json.dumps({'status': 'success', 'data':'successfuly send transaction'})
+            else:
+                return json.dumps({'status': 'success', 'data':'waiting for another user send the signed transaction'})
+        else:
+            return json.dumps({'status': 'failed', 'reason':'another user failed'})
+    else:
+        return json.dumps({'status': 'failed', 'reason': 'auth failed'})
 
 
 @app.errorhandler(404)
@@ -174,21 +215,29 @@ def test():
     #solana_api.test()
     return render_template('testpage.html')
 
+@app.route("/get_raw_transaction")
+def get_raw_transaction():
+    return solana_api.get_raw_transaction()
 
-@app.route("/get_transation_message")
-def get_transation_message():
-    return solana_api.get_transation_message()
+# @app.route("/get_transaction_message")
+# def get_transaction_message():
+#     return solana_api.get_transaction_message()
 
+# @app.route("/send_transaction", methods=["POST"])
+# def send_transaction():
+#     req = request.json
+#     print(req)
+#     return solana_api.send_transaction(req)
 
-@app.route("/match")
-def match():
-    pubkey1 = request.args.get('pubkey1')
-    pubkey2 = request.args.get('pubkey2')
-    if check_match_exist(db, pubkey1, pubkey2):
-        return 'already exist'
-    else:
-        add_match_record(db, pubkey1, pubkey2)
-        return 'success'
+# @app.route("/match")
+# def match():
+#     pubkey1 = request.args.get('pubkey1')
+#     pubkey2 = request.args.get('pubkey2')
+#     if check_match_exist(db, pubkey1, pubkey2):
+#         return 'already exist'
+#     else:
+#         add_match_record(db, pubkey1, pubkey2)
+#         return 'success'
 
 @app.route("/pairing")
 def pairing():
@@ -199,7 +248,8 @@ def pairing():
 def chat():
     # In particular, if user pass the test, cookie must contain 'pubkey' & 'auth'
     if verify_auth(request)['status']:
-        return render_template('chat.html')
+        chat_to = request.args.get("to")
+        return render_template('chat.html',to=chat_to)
     elif verify_auth(request)['reason'] == "NFT":
         return redirect('/nonft')
     else:
@@ -270,6 +320,7 @@ def on_join(data):
         #socketio.emit('success_joind', f'You have entered the room {room_id}.', to=room_id)
         res = {}
         res['room_id'] = room_id
+        res['txid'] = get_txid(db, room_id)
         res['another_user'] = another_user_info 
         res['my_img_url'] = get_info_by_pubkey(db,pubkey)['img_url']
         print(f'{pubkey} just join {room_id}.')
@@ -289,7 +340,51 @@ def on_leave(data):
     socketio.send('success_leave' + f'You have entered the room {room_id}', to=room_id)
     leave_room(room_id)
     
+@socketio.on('request_tx')
+def request_tx(data):
+    pubkey = data['pubkey']
+    room_id = data['room_id']
+    # check the user in the room
+    if pubkey in user_room_pair and user_room_pair[pubkey] == room_id:
+        socketio.emit('trigger_tx_request', to=room_id, include_self=False)
+    else:
+        print('User not in this room!')
 
+
+@socketio.on('trigger_tx_accept')
+def trigger_sign(data):
+    pubkey = data['pubkey']
+    room_id = data['room_id']
+    # check the user in the room
+    if pubkey in user_room_pair and user_room_pair[pubkey] == room_id:
+        # another_user = get_another_user_info(db, pubkey, room_id)
+        # user = get_info_by_pubkey(db, pubkey)
+        # blockhash = solana_api.get_blockhash()['data']['blockhash']
+        # req = {
+        #     'mints': [user['nft_addr'], another_user['nft_addr']], 
+        #     'names': [str(user['level']), str(another_user['level'])],
+        #     'blockhash': blockhash
+        # }
+        # res = solana_api.get_raw_transaction(req)
+        # print(res)
+        another_user_pubkey = get_another_user_info(db, pubkey, room_id)['pubkey']
+        blockhash = solana_api.get_blockhash()['data']['blockhash']
+        data = {'users':[pubkey, another_user_pubkey], 'blockhash':blockhash}
+        sign_queue[blockhash] = {pubkey:'', another_user_pubkey:''}
+        socketio.emit('trigger_wallet_to_sign_tx', data, to=room_id)
+    else:
+        print('User not in this room!')
+
+@socketio.on('get_tx_error')
+def get_tx_error(data):
+    pubkey = data['pubkey']
+    room_id = data['room_id']
+    # check the user in the room
+    if pubkey in user_room_pair and user_room_pair[pubkey] == room_id:
+        socketio.emit('trigger_tx_error', to=room_id)
+    else:
+        print('User not in this room!')
+    
 if __name__ == "__main__":
     #app.run('0.0.0.0',debug=True)
     socketio.run(app, host='0.0.0.0', debug=True, keyfile='./cert/privkey1.pem', certfile='./cert/cert1.pem') 

@@ -16,6 +16,8 @@
   <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"
     integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k"
     crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+  <script src="https://bundle.run/safe-buffer@5.2.1"></script>
   <script>
     $(function () {
       $("#header").load("/header");
@@ -28,13 +30,18 @@
   <div class="area chat-area">
     <div class="row chatpage-header">
       <div class="col-3">
-        <div class="chatting-name"><span><img src="/static/img/list.png" width="40px"></span>&nbsp&nbsp<span>List</span>
+        <div class="chatting-name">
+          <span><img src="/static/img/list.png" width="40px"></span>&nbsp&nbsp
+          <span>List</span>
         </div>
       </div>
       <div class="col-6">
-        <div class="chatting-name"><span><img src="/static/img/chat.png" width="36px"></span>&nbsp&nbsp<span
-            id="chatting-name"></span>
+        <div id="chatting-bar" class="chatting-name">
+          <!-- <span><img src="/static/img/chat.png" width="36px"></span>&nbsp&nbsp -->
+          <span id="chatting-name"></span>
           <div id="status"></div><span id="status-text" class="status-text"></span>
+          <div id='send-trans' style='display: none;'><button id="send-trans-button" class='button-look send-trans-button'>Send
+              Transaction</button></div>
         </div>
       </div>
       <div class="col-3">
@@ -59,6 +66,9 @@
                 <a id="header-chat" href="/chat">
                   <li>Chatroom</li>
                 </a>
+                <a id="header-logout" href="javascript:void(0)" onclick="logout()">
+                  <li>Logout</li>
+                </a>
               </ul>
             </div>
           </div>
@@ -78,7 +88,7 @@
                   width="30px"></span></button></div>
         </div>
 
-        <!-- Modal -->
+        <!-- Info Modal -->
         <div class="my-modal fade-in-modal" id="showInfoModal" tabindex="-1" aria-labelledby="firstTimeModalLabel"
           aria-hidden="true" style="display: none;">
           <div class="modal-dialog">
@@ -106,10 +116,45 @@
                     <td id="chat-hobby"></td>
                   </tr>
                 </table>
+                <br>
+                <center><a id="transaction-addr" target="_blank" class="button-look chat-button transaction-addr-button" style="display: none;">Transaction</a></center>
               </div>
               <div class="modal-footer">
                 <button type="button" id="info-close" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <!-- <a href="/information"><button type="button" class="btn btn-primary">Go</button></a> -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trans Modal -->
+        <div class="my-modal fade-in-modal" id="sendTransModal" tabindex="-1" aria-labelledby="firstTimeModalLabel"
+          aria-hidden="true" style="display: none;">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-body">
+                Send a transaction.
+              </div>
+              <div class="modal-footer">
+                <button type="button" id="trans-close" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="trans-confirm" class="btn btn-primary"
+                  data-bs-dismiss="modal">Confirm</button>
+                <!-- <a href="/information"><button type="button" class="btn btn-primary">Go</button></a> -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trans Error Modal -->
+        <div class="my-modal fade-in-modal" id="transErrorModal" tabindex="-1" aria-labelledby="firstTimeModalLabel"
+          aria-hidden="true" style="display: none;">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-body">
+                Transaction error 😢😢
+              </div>
+              <div class="modal-footer">
+                <button type="button" id="trans-error-close" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
               </div>
             </div>
           </div>
@@ -121,8 +166,9 @@
   </div>
   </div>
   <script src="/static/js/chat.js"></script>
+  <script src="/static/js/sign_tx.js"></script>
   <script>
-    init();
+    init('{{to}}');
     $("#input-box").keypress(function (e) {
       var key = e.which;
       if (key == 13) {
@@ -134,6 +180,11 @@
         }
       }
     });
+    function logout() {
+      document.cookie.split(";").forEach(function (c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
+      console.log("logout");
+      window.location.href = "/";
+    }
   </script>
 
 </body>

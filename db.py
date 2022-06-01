@@ -19,13 +19,15 @@ def create_tables(conn):
          gender             TEXT                 NOT NULL,
          hobby              TEXT                 NOT NULL,
          nft_addr           TEXT                         ,
-         img_url            TEXT                 
+         img_url            TEXT                         ,
+         level              INTEGER                              
         );''')
     
     c.execute('''CREATE TABLE Match
-        (id                TEXT                 NOT NULL,
-         user1             TEXT                 NOT NULL,
-         user2             TEXT                 NOT NULL
+        (id                 TEXT                 NOT NULL,
+         user1              TEXT                 NOT NULL,
+         user2              TEXT                 NOT NULL,
+         txid               TEXT                 
         );''')
     
     c.execute('''CREATE TABLE Message
@@ -87,9 +89,11 @@ def get_matched_user_by_pubkey(conn, pubkey):
     else:
         ids = []
         match_ids = []
+        tx_ids = []
         for row in rows:
             ids.append(row['user2'])
             match_ids.append(row['id'])
+            tx_ids.append(row['txid'])
         #print(match_ids)
         query = f"SELECT * FROM User WHERE pubkey in ({','.join(['?']*len(ids))}) ORDER BY pubkey ASC"
         cur.execute(query, ids)
@@ -100,6 +104,7 @@ def get_matched_user_by_pubkey(conn, pubkey):
         for i in range(len(rows)):
             tmp = {}
             tmp['room_id'] = match_ids[i]
+            tmp['txid'] = tx_ids[i]
             tmp['pubkey'] = rows[i]['pubkey']
             tmp['username'] = rows[i]['username']
             # if the matched user still have nft
@@ -119,6 +124,7 @@ def get_info_by_pubkey(conn, pubkey):
     res['pubkey'] = user['pubkey']
     res['img_url'] = user['img_url']
     res['nft_addr'] = user['nft_addr']
+    res['level'] = user['level']
     return res
 
 def set_info_by_pubkey(conn, pubkey, username, birthday, gender, hobby):
@@ -196,14 +202,14 @@ def update_pairing_status(conn, pubkey, status):
     cur.execute(f"UPDATE PairingStatus SET status = {status} WHERE user = '{pubkey}';")
     conn.commit()
 
-def update_user_nft(conn, pubkey, nft_pubkey, img_url):
+def update_user_nft(conn, pubkey, nft_pubkey, img_url, level):
     cur = conn.cursor()
-    cur.execute(f"UPDATE User SET nft_addr = '{nft_pubkey}', img_url='{img_url}' WHERE pubkey = '{pubkey}';")
+    cur.execute(f"UPDATE User SET nft_addr='{nft_pubkey}', img_url ='{img_url}', level={level} WHERE pubkey = '{pubkey}';")
     conn.commit()
 
 def clear_user_nft(conn, pubkey):
     cur = conn.cursor()
-    cur.execute(f"UPDATE User SET nft_addr = null, img_url = null WHERE pubkey = '{pubkey}';")
+    cur.execute(f"UPDATE User SET nft_addr = null, img_url = null, level = null WHERE pubkey = '{pubkey}';")
     conn.commit()
 
 def check_user_have_nft(conn, pubkey):
@@ -214,4 +220,19 @@ def check_user_have_nft(conn, pubkey):
         return True
     else:
         return False
+
+def get_txid(conn, room_id):
+    cur = conn.cursor()
+    cur.execute(f"SELECT * FROM Match WHERE id = '{room_id}';")
+    row = cur.fetchone()
+    assert row
+    txid = row['txid']
+    return txid
+
+def set_txid(conn, room_id, txid):
+    cur = conn.cursor()
+    cur.execute(f"UPDATE Match SET txid = '{txid}' WHERE id = '{room_id}';")
+    conn.commit()
+
+
 #create_tables(get_db())

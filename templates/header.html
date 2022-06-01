@@ -1,6 +1,7 @@
 <div class="row chatpage-header">
   <div class="col-9">
-    <div class="chatting-name"><a class="logo-homepage" href="/"><span><img id="logo" src="/static/img/unicorn3.png"></span>&nbsp&nbsp<span>Solution</span></a></div>
+    <div class="chatting-name"><a class="logo-homepage" href="/"><span><img id="logo"
+            src="/static/img/unicorn3.png"></span>&nbsp&nbsp<span>Solution</span></a></div>
   </div>
   <div class="col-3">
     <div class="row">
@@ -25,6 +26,9 @@
               <a id="header-chat" href="/chat">
                 <li>Chatroom</li>
               </a>
+              <a id="header-logout" href="javascript:void(0)" onclick="logout()">
+                <li>Logout</li>
+              </a>
             </ul>
           </div>
         </div>
@@ -32,6 +36,14 @@
     </div>
   </div>
 </div>
+
+<script>
+  function logout() {
+    document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
+    console.log("logout");
+    window.location.href = "/";
+  }
+</script>
 
 <!-- <nav role="navigation">
   <div id="menuToggle">

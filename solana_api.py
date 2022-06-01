@@ -13,9 +13,17 @@ def get_nfts_by_wallet(pubkey):
     )
     return(response.json())
 
-def get_transation_message():
-    response = requests.get( api_server + "/get_transation_message")
-    print(response)
+def get_blockhash():
+    response = requests.post( api_server + "/get_blockhash")
+    return(response.json())
+
+def get_raw_transaction(req):
+    response = requests.get( api_server + "/get_raw_transaction", json = req)
+    return(response.json())
+
+def send_transaction(req):
+    print(req)
+    response = requests.post( api_server + "/send_transaction", json = req)
     return(response.json())
 
 def get_img_url(uri):

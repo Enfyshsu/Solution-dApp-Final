@@ -139,6 +139,7 @@ function notAllFinished() {
     $("#header-meet").hide();
     $("#header-chat").hide();
     $("#header-info").hide();
+    $("#header-logout").hide();
 }
 
 function finishedAll() {
